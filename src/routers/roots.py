@@ -1,5 +1,7 @@
+import json
+
 from fastapi import APIRouter
-from ..db_manager.db_collection_getter import get_db_collection
+from ..db_manager.db_utils import get_db_collection
 
 router = APIRouter()
 
@@ -11,11 +13,12 @@ async def no_year():
 
 
 # Get all roots from election in year
-@router.get("/all_roots/{year}")
-async def get_documents(year):
-    collection = get_db_collection(year)
+@router.get("/all_roots/{year}/{election}")
+async def get_documents(year, election):
+    collection = get_db_collection(year, election)
     documents = collection.find({})
     results = []
     for doc in documents:
-        results.append(doc.get('root'))
+        doc['_id'] = str(doc['_id'])
+        results.append(doc)
     return results

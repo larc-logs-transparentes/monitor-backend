@@ -4,23 +4,24 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
-from .global_roots_periodic_fetcher.LogServerDataFetcher import LogServerDataFetcher
+from .global_roots_periodic_fetcher.LogServerDataManager import LogServerDataManager
 from .routers import roots
 
 
 # Create data fetcher object to start it with API, but on other thread
-data_fetcher = LogServerDataFetcher()
+data_fetcher = LogServerDataManager()
 
 
 # Define actions to take on API server startup and shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Run at startup: second thread with database fetcher from LogServer to Monitor
-    thread = threading.Thread(target=LogServerDataFetcher.start_get_data_from_log_server)
+    thread = threading.Thread(target=LogServerDataManager.start_get_data_from_log_server)
     thread.start()
     yield
+
     # Run on shutdown: turn off second thread
-    LogServerDataFetcher.set_turn_fetcher_on(False)
+    LogServerDataManager.set_turn_fetcher_on(False)
     print('Shutting down...')
 
 
