@@ -1,7 +1,7 @@
 # Log Server data fetcher constants:
 global_tree_name = "global_tree"
-election_name = "election_545"
 election_year = "2023"
+loop_time_fetch_logserver = 60  # in seconds
 
 url = "http://localhost:8080"
 
