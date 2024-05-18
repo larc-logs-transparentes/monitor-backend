@@ -2,7 +2,7 @@ import asyncio
 
 from src.db_manager.db_utils import *
 from .log_server_connector import *
-from .config import election_name, election_year
+from .config import global_tree_name, election_year, loop_time_fetch_logserver
 
 
 class LogServerDataManager:
@@ -26,7 +26,7 @@ class LogServerDataManager:
                     roots = get_global_tree_all_roots_since(cls.last_root_cache)
                     cls.insert_roots_to_db_collection(False, roots)
                 else:   # if there is no cache, check last root in db
-                    document = select_document_larger_tree_size(election_name, election_year)
+                    document = select_document_larger_tree_size(global_tree_name, election_year)
                     last_root_db = document.get("value")
                     if last_root_db:    # if db has roots, get last and get from log server starting at it
                         roots = get_global_tree_all_roots_since(last_root_db)
@@ -36,7 +36,7 @@ class LogServerDataManager:
                         cls.insert_roots_to_db_collection(True, roots)
             except requests.exceptions.RequestException as e:
                 print(f"Error: {e}")
-            await asyncio.sleep(60)  # Sleep for 60 seconds\
+            await asyncio.sleep(loop_time_fetch_logserver)  # Sleep for a number of seconds before checking again
 
     # Helper method to run async methods in parallel thread
     @staticmethod
@@ -50,6 +50,6 @@ class LogServerDataManager:
             roots.pop(0)
 
         if len(roots) > 0:
-            result = insert_roots_to_collection(election_name, election_year, roots)
+            result = insert_roots_to_collection(global_tree_name, election_year, roots)
             if result.acknowledged:
                 cls.last_root_cache = roots[-1].get('value')
