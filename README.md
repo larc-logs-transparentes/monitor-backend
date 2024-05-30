@@ -15,11 +15,12 @@ ___
 ###### API offers endpoints for getting and checking roots
 
 #### GET: get all roots: {url}/all_roots/{year}
-```commandline
 Send: {year} in address
+```text
 url/all_roots/2023
-
+```
 Receive:
+```json
 [
     {
         "_id": "6648b8b4932a0b5b3b3f60c5",
@@ -42,11 +43,12 @@ Receive:
 ```
 
 #### GET: check one root: /check_root/{year}/{value}
-```commandline
 Send: {year} and {root value} in address
+```commandline
 url/check_root/2023/c20364057fed49aa36403dabb6e29c4877656ee08d016a2dd567456e03ef5ebc
-
+```
 Receive: "match" (boolean) if got root in db, and "root" object or "error"
+```json
 {
     "match": true,
     "root": {
@@ -58,9 +60,9 @@ Receive: "match" (boolean) if got root in db, and "root" object or "error"
         "timestamp": "2024-05-08T12:53:14.716154"
     }
 }
-
+```
 or
-
+```json
 {
     "match": false,
     "error": "Raiz não encontrada."
@@ -68,8 +70,8 @@ or
 ```
 
 #### POST: check one root: /check_root/
-```commandline
 Send: "year" and "root" object in body of POST
+```json
 {
     "year": 2023,
     "root": {
@@ -78,8 +80,9 @@ Send: "year" and "root" object in body of POST
         "signature": "a1be5cf4dd5bfd8e70a8cd35df1ace2d05400f0fdc66a804c497c244e199b4b6b05279829ecfc98cf9caea437d34f70a6fc4a0bb973e198d36ef88f549370708"
     }
 }
-
+```
 Receive: "match" (boolean) if got root in db, and "db_root" object or "error"
+```json
 {
     "signature": true,
     "value": true,
@@ -93,9 +96,9 @@ Receive: "match" (boolean) if got root in db, and "db_root" object or "error"
         "timestamp": "2024-05-08T12:53:14.716154"
     }
 }
-
-or validation status (signature and value), "db_root" found with tree_size, and hint of possible error
-
+```
+Or validation status (signature and value), "db_root" found with tree_size, and hint of possible error
+```json
 {
     "signature": true,
     "value": false,
@@ -110,9 +113,9 @@ or validation status (signature and value), "db_root" found with tree_size, and 
     },
     "hint": "Verifique se o atributo tree_size enviado contém o valor correto."
 }
-
+```
 or, if tree_size is not present in db,
-
+```json
 {
     "match": false,
     "db": false,
