@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from .global_roots_periodic_fetcher.LogServerDataManager import LogServerDataManager
-from .routers import roots
+from .routers import routes
 
 
 # Create data fetcher object to start it with API, but on other thread
@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
 
 # Create API app and include routers
 app = FastAPI(lifespan=lifespan)
-app.include_router(roots.router)
+app.include_router(routes.router)
 
 
 # Start server

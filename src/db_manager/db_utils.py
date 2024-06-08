@@ -9,6 +9,17 @@ def get_db_collection(db_name, collection_name):
     return collection
 
 
+def is_year_in_db(db_name):
+    client = get_db_client()
+    databases = client.list_database_names()
+    databases.remove('admin')
+    databases.remove('local')
+    if db_name in databases:
+        return True
+    else:
+        return False
+
+
 def select_all_docs_in_year(collection_name, db_name):
     collection = get_db_collection(db_name, collection_name)
     documents = collection.find({})
@@ -37,6 +48,11 @@ def select_document_larger_tree_size(collection_name, db_name):
         return result[0]
     else:
         return {}
+
+
+def get_larger_tree_size_in_db(collection_name, db_name):
+    document = select_document_larger_tree_size(collection_name, db_name)
+    return document.get('tree_size')
 
 
 def select_document_with_tree_size(collection_name, db_name, tree_size):
