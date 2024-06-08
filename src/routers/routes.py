@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from .config import global_tree_name
 from ..db_manager.db_utils import is_year_in_db, get_larger_tree_size_in_db, select_all_docs_in_year, select_document_with_tree_size, select_document_with_value
-from .helper import compare_roots, sanitize_doc
+from .helper import compare_roots, sanitize_doc, has_missing_request_data
 
 router = APIRouter()
 
@@ -36,36 +36,10 @@ async def check_root(request: Request):
     year = item.get("year")         # get year from user object
     root = item.get("root")         # get root from user object
 
-    # If field "year" is not present, stop and return
-    if not year:
-        return {"match": None,
-                "year": False,
-                "error_key": "year",
-                "error": 'Atributo "year" ausente na requisição.'}
-
-    # If field "root" is not present, stop and return
-    if not root:
-        return {"match": None,
-                "root": False,
-                "error_key": "root",
-                "error": 'Atributo year "root" ausente na requisição.'}
-    # If field "root" is present, check in it for presence of 'value', 'tree_size' and 'signature'
-    else:
-        if not root.get('value'):
-            return {"match": None,
-                    "value": False,
-                    "error_key": "value",
-                    "error": 'Atributo "value" ausente em "root".'}
-        if not root.get('tree_size'):
-            return {"match": None,
-                    "tree_size": False,
-                    "error_key": "tree_size",
-                    "error": 'Atributo "tree_size" ausente em "root".'}
-        if not root.get('signature'):
-            return {"match": None,
-                    "signature": False,
-                    "error_key": "signature",
-                    "error": 'Atributo "signature" ausente em "root".'}
+    # Check if request is missing data, if it is, stop and respond
+    is_missing_response = has_missing_request_data(year, root)
+    if not is_missing_response:
+        return is_missing_response
 
     # If requested 'year' is not in db, stop and return
     if not is_year_in_db(str(year)):
