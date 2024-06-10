@@ -38,7 +38,7 @@ async def check_root(request: Request):
 
     # Check if request is missing data, if it is, stop and respond
     is_missing_response = has_missing_request_data(year, root)
-    if not is_missing_response:
+    if is_missing_response:
         return is_missing_response
 
     # If requested 'year' is not in db, stop and return

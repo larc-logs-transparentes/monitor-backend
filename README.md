@@ -81,45 +81,56 @@ Send: "year" and "root" object in body of POST
     }
 }
 ```
-Receive: "match" (boolean) if got root in db, and "db_root" object or "error"
+If "match = null", there is a field missing in request. Or, the db does not have the "tree_size" requested, yet. The key missing is in field "error_key", which could be: "year, root, value, tree_size, signature, db"
+
+#
+#### Verification Success: Receive "match, value, signature = True", and root data
 ```json
 {
-    "signature": true,
     "value": true,
+    "signature": true,
     "match": true,
     "db_root": {
-        "_id": "6648b8b4932a0b5b3b3f60c6",
         "value": "c20364057fed49aa36403dabb6e29c4877656ee08d016a2dd567456e03ef5ebc",
-        "tree_name": "global_tree",
         "tree_size": 3,
-        "signature": "a1be5cf4dd5bfd8e70a8cd35df1ace2d05400f0fdc66a804c497c244e199b4b6b05279829ecfc98cf9caea437d34f70a6fc4a0bb973e198d36ef88f549370708",
-        "timestamp": "2024-05-08T12:53:14.716154"
+        "signature": "a1be5cf4dd5bfd8e70a8cd35df1ace2d05400f0fdc66a804c497c244e199b4b6b05279829ecfc98cf9caea437d34f70a6fc4a0bb973e198d36ef88f549370708"
     }
 }
 ```
-Or validation status (signature and value), "db_root" found with tree_size, and hint of possible error
+#
+#### Verification Fail: Validation status "signature / value" from request did not match DB. Booleans of properties show what did not match. Hint is ready to show user.
 ```json
 {
-    "signature": true,
     "value": false,
+    "signature": false,
     "match": false,
+    "error_key": "value",
     "db_root": {
-        "_id": "6648b8b4932a0b5b3b3f60c6",
-        "value": "c20364057fed49aa36403dabb6e29c4877656ee08d016a2dd567456e03ef5ebc",
-        "tree_name": "global_tree",
-        "tree_size": 3,
-        "signature": "a1be5cf4dd5bfd8e70a8cd35df1ace2d05400f0fdc66a804c497c244e199b4b6b05279829ecfc98cf9caea437d34f70a6fc4a0bb973e198d36ef88f549370708",
-        "timestamp": "2024-05-08T12:53:14.716154"
+        "value": "c803877fbb8ae509d2072ef19018f90c3064319bb8d92c5b37d3d3de7c5ebffb",
+        "tree_size": 4,
+        "signature": "8b361d177c9d21f83e4e51acef452b54676f2e103181ab1ab00ef2f2031847083a54c0570e3b50c76c92df0d627bc886c0497f9b3a2b35fb231960d67d4a7b0a"
     },
     "hint": "Verifique se o atributo tree_size enviado contém o valor correto."
 }
 ```
-or, if tree_size is not present in db,
+#
+#### Verification Fail: missing data
+Missing year
 ```json
 {
-    "match": false,
-    "db": false,
-    "error_key": "db",
-    "error": "Banco de dados ainda não alcançou a raíz pedida, tente novamente mais tarde."
+    "match": null,
+    "year": false,
+    "error_key": "year",
+    "error": "Atributo \"year\" ausente na requisição."
 }
 ```
+Missing tree_size
+```json
+{
+    "match": null,
+    "tree_size": false,
+    "error_key": "tree_size",
+    "error": "Atributo \"tree_size\" ausente em \"root\"."
+}
+```
+Same for all 5 mandatory keys in request
