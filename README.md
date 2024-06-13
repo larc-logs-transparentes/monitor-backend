@@ -30,7 +30,7 @@ Receive:
         "signature": "10338a00350e784b5e8fc7df017d7e58334b48ebd9cef5f05ab32bb053d1f159fa5ef5e1becfefb4767f11c4cc9246cca85ae97ad7fe5d28374087a25ef0f20c",
         "timestamp": "2024-05-08T12:53:14.451184"
     },
-    ...,
+    "...",
     {
         "_id": "664a7c55555c984db2e743d0",
         "value": "1aea4a83c833bac93eacf2f1baa5a36ed79d727e1230f781b353a6f9cec10a1c",
@@ -81,15 +81,17 @@ Send: "year" and "root" object in body of POST
     }
 }
 ```
-If "match = null", there is a field missing in request. Or, the db does not have the "tree_size" requested, yet. The key missing is in field "error_key", which could be: "year, root, value, tree_size, signature, db"
+If "match = null", there is a field missing in request. Or, the db does not have the "tree_size" requested, yet.
 
 #
 #### Verification Success: Receive "match, value, signature = True", and root data
 ```json
 {
-    "value": true,
-    "signature": true,
     "match": true,
+    "match_details": {
+        "value": true,
+        "signature": true
+    },
     "db_root": {
         "value": "c20364057fed49aa36403dabb6e29c4877656ee08d016a2dd567456e03ef5ebc",
         "tree_size": 3,
@@ -101,10 +103,11 @@ If "match = null", there is a field missing in request. Or, the db does not have
 #### Verification Fail: Validation status "signature / value" from request did not match DB. Booleans of properties show what did not match. Hint is ready to show user.
 ```json
 {
-    "value": false,
-    "signature": false,
     "match": false,
-    "error_key": "value",
+    "match_details": {
+        "value": false,
+        "signature": false
+    },
     "db_root": {
         "value": "c803877fbb8ae509d2072ef19018f90c3064319bb8d92c5b37d3d3de7c5ebffb",
         "tree_size": 4,
@@ -114,23 +117,32 @@ If "match = null", there is a field missing in request. Or, the db does not have
 }
 ```
 #
+#### Verification Fail: the monitor does not have the tree_size root yet
+```json
+{
+    "match": null,
+    "error": "Tree size not found",
+    "message": "Monitor ainda não possui a raiz da árvore desse tamanho"
+}
+```
+
+#
 #### Verification Fail: missing data
 Missing year
 ```json
 {
     "match": null,
-    "year": false,
-    "error_key": "year",
-    "error": "Atributo \"year\" ausente na requisição."
+    "error": "Missing parameter",
+    "message": "Atributo \"year\" ausente na requisição."
 }
 ```
 Missing tree_size
 ```json
 {
     "match": null,
-    "tree_size": false,
-    "error_key": "tree_size",
-    "error": "Atributo \"tree_size\" ausente em \"root\"."
+    "error": "Missing parameter",
+    "message": "Atributo \"tree_size\" ausente em \"root\"."
 }
 ```
+
 Same for all 5 mandatory keys in request
