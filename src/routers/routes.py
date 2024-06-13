@@ -44,9 +44,8 @@ async def check_root(request: Request):
     # If requested 'year' is not in db, stop and return
     if not is_year_in_db(str(year)):
         return {"match": None,
-                "year": False,
-                "error_key": "year",
-                "error": 'Eleição com "year" informado ainda não existe no sistema.'}
+                "error": "year not found",
+                "message": 'Eleição com "year" informado ainda não está no sistema.'}
 
     # If requested 'year' is in db, get larger 'tree_size' available in year's db
     largest_tree_size = get_larger_tree_size_in_db(global_tree_name, str(year))
@@ -54,15 +53,14 @@ async def check_root(request: Request):
     # If largest tree_size is null, db is empty, stop and return
     if not largest_tree_size:
         return {"match": None,
-                "year": False,
-                "error_key": "year",
-                "error": 'Eleição com "year" informado ainda não possui dados.'}
+                "error": "year empty",
+                "message": 'Eleição com "year" informado ainda não possui dados.'}
     # If largest tree_size is smaller than tree_size requested, stop and return
     elif largest_tree_size < root.get('tree_size'):
         return {"match": None,
-                "db": False,
-                "error_key": "db",
-                "error": 'Banco de dados não alcançou a "root" informada, tente novamente mais tarde.'}
+                "error": "Tree size not found",
+                "message": "Monitor ainda não possui a raiz da árvore desse tamanho"
+        }
 
     # Else, get document in db with same tree_size given by user
     db_doc = select_document_with_tree_size(global_tree_name, str(year), root.get('tree_size'))
